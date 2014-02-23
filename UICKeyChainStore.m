@@ -72,12 +72,12 @@ static NSString *defaultService;
 	}
     
 	NSMutableDictionary* query = [NSMutableDictionary dictionary];
-	[query setObject:kSecClassGenericPassword forKey:kSecClass];
-	[query setObject:(id)kCFBooleanTrue forKey:kSecReturnData];
-	[query setObject:kSecMatchLimitOne forKey:kSecMatchLimit];
-	[query setObject:service forKey:kSecAttrService];
-    [query setObject:key forKey:kSecAttrGeneric];
-    [query setObject:key forKey:kSecAttrAccount];
+	query[(id)kSecClass] = kSecClassGenericPassword;
+	query[(id)kSecReturnData] = (id)kCFBooleanTrue;
+	query[(id)kSecMatchLimit] = kSecMatchLimitOne;
+	query[(id)kSecAttrService] = service;
+    query[(id)kSecAttrGeneric] = key;
+    query[(id)kSecAttrAccount] = key;
 #if !TARGET_IPHONE_SIMULATOR && defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     if (accessGroup) {
         [query setObject:accessGroup forKey:kSecAttrAccessGroup];
@@ -111,10 +111,10 @@ static NSString *defaultService;
 	}
 	
 	NSMutableDictionary *query = [NSMutableDictionary dictionary];
-	[query setObject:kSecClassGenericPassword forKey:kSecClass];
-	[query setObject:service forKey:kSecAttrService];
-    [query setObject:key forKey:kSecAttrGeneric];
-    [query setObject:key forKey:kSecAttrAccount];
+	query[(id)kSecClass] = kSecClassGenericPassword;
+	query[(id)kSecAttrService] = service;
+    query[(id)kSecAttrGeneric] = key;
+    query[(id)kSecAttrAccount] = key;
 #if !TARGET_IPHONE_SIMULATOR && defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     if (accessGroup) {
         [query setObject:accessGroup forKey:kSecAttrAccessGroup];
@@ -125,7 +125,7 @@ static NSString *defaultService;
 	if (status == errSecSuccess) {
         if (data) {
             NSMutableDictionary *attributesToUpdate = [NSMutableDictionary dictionary];
-            [attributesToUpdate setObject:data forKey:kSecValueData];
+            attributesToUpdate[(id)kSecValueData] = data;
             
             status = SecItemUpdate((CFDictionaryRef)query, (CFDictionaryRef)attributesToUpdate);
             if (status != errSecSuccess) {
@@ -136,11 +136,11 @@ static NSString *defaultService;
         }
 	} else if (status == errSecItemNotFound) {
 		NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-		[attributes setObject:kSecClassGenericPassword forKey:kSecClass];
-        [attributes setObject:service forKey:kSecAttrService];
-        [attributes setObject:key forKey:kSecAttrGeneric];
-        [attributes setObject:key forKey:kSecAttrAccount];
-		[attributes setObject:data forKey:kSecValueData];
+		attributes[(id)kSecClass] = kSecClassGenericPassword;
+        attributes[(id)kSecAttrService] = service;
+        attributes[(id)kSecAttrGeneric] = key;
+        attributes[(id)kSecAttrAccount] = key;
+		attributes[(id)kSecValueData] = data;
 #if !TARGET_IPHONE_SIMULATOR && defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
         if (accessGroup) {
             [attributes setObject:accessGroup forKey:kSecAttrAccessGroup];
@@ -174,10 +174,10 @@ static NSString *defaultService;
 	}
 	
 	NSMutableDictionary *itemToDelete = [NSMutableDictionary dictionary];
-	[itemToDelete setObject:kSecClassGenericPassword forKey:kSecClass];
-	[itemToDelete setObject:service forKey:kSecAttrService];
-    [itemToDelete setObject:key forKey:kSecAttrGeneric];
-    [itemToDelete setObject:key forKey:kSecAttrAccount];
+	itemToDelete[(id)kSecClass] = kSecClassGenericPassword;
+	itemToDelete[(id)kSecAttrService] = service;
+    itemToDelete[(id)kSecAttrGeneric] = key;
+    itemToDelete[(id)kSecAttrAccount] = key;
 #if !TARGET_IPHONE_SIMULATOR && defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     if (accessGroup) {
         [itemToDelete setObject:accessGroup forKey:kSecAttrAccessGroup];
@@ -196,11 +196,11 @@ static NSString *defaultService;
 	}
 	
 	NSMutableDictionary *query = [NSMutableDictionary dictionary];
-	[query setObject:kSecClassGenericPassword forKey:kSecClass];
-	[query setObject:(id)kCFBooleanTrue forKey:kSecReturnAttributes];
-	[query setObject:(id)kCFBooleanTrue forKey:kSecReturnData];
-	[query setObject:kSecMatchLimitAll forKey:kSecMatchLimit];
-	[query setObject:service forKey:kSecAttrService];
+	query[(id)kSecClass] = kSecClassGenericPassword;
+	query[(id)kSecReturnAttributes] = (id)kCFBooleanTrue;
+	query[(id)kSecReturnData] = (id)kCFBooleanTrue;
+	query[(id)kSecMatchLimit] = kSecMatchLimitAll;
+	query[(id)kSecAttrService] = service;
 #if !TARGET_IPHONE_SIMULATOR && defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     if (accessGroup) {
         [query setObject:accessGroup forKey:kSecAttrAccessGroup];
@@ -229,7 +229,7 @@ static NSString *defaultService;
     NSArray *items = [UICKeyChainStore itemsForService:service accessGroup:accessGroup];    
     for (NSDictionary *item in items) {
         NSMutableDictionary *itemToDelete = [NSMutableDictionary dictionaryWithDictionary:item];
-        [itemToDelete setObject:kSecClassGenericPassword forKey:kSecClass];
+        itemToDelete[(id)kSecClass] = kSecClassGenericPassword;
         
         OSStatus status = SecItemDelete((CFDictionaryRef)itemToDelete);
         if (status != errSecSuccess) {
@@ -276,8 +276,8 @@ static NSString *defaultService;
         }
 		
         NSMutableDictionary *query = [NSMutableDictionary dictionaryWithDictionary:itemsToUpdate];
-        [query setObject:(id)kSecMatchLimitAll forKey:(id)kSecMatchLimit];
-        [query setObject:(id)kCFBooleanTrue forKey:(id)kSecReturnAttributes];
+        query[(id)kSecMatchLimit] = (id)kSecMatchLimitAll;
+        query[(id)kSecReturnAttributes] = (id)kCFBooleanTrue;
         
         NSMutableDictionary *result = nil;
         OSStatus status = SecItemCopyMatching((CFDictionaryRef)query, (CFTypeRef *)&result);
@@ -305,17 +305,17 @@ static NSString *defaultService;
     NSMutableArray *list = [NSMutableArray arrayWithCapacity:[items count]];    
     for (NSDictionary *attributes in items) {
         NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
-        [attrs setObject:[attributes objectForKey:kSecAttrService] forKey:@"Service"];
-        [attrs setObject:[attributes objectForKey:kSecAttrAccount] forKey:@"Account"];
+        attrs[@"Service"] = attributes[(id)kSecAttrService];
+        attrs[@"Account"] = attributes[(id)kSecAttrAccount];
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
         [attrs setObject:[attributes objectForKey:kSecAttrAccessGroup] forKey:@"AccessGroup"];
 #endif
-        NSData *data = [attributes objectForKey:kSecValueData];
+        NSData *data = attributes[(id)kSecValueData];
         NSString *string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
         if (string) {
-            [attrs setObject:string forKey:@"Value"];
+            attrs[@"Value"] = string;
         } else {
-            [attrs setObject:data forKey:@"Value"];
+            attrs[@"Value"] = data;
         }
         [list addObject:attrs];
     }
@@ -343,12 +343,12 @@ static NSString *defaultService;
     if (!data) {
         [self removeItemForKey:key];
     } else {
-        [itemsToUpdate setObject:data forKey:key];
+        itemsToUpdate[key] = data;
     }
 }
 
 - (NSData *)dataForKey:(NSString *)key {
-    NSData *data = [itemsToUpdate objectForKey:key];
+    NSData *data = itemsToUpdate[key];
     if (!data) {
         data = [[self class] dataForKey:key service:service accessGroup:accessGroup];
     }
@@ -356,7 +356,7 @@ static NSString *defaultService;
 }
 
 - (void)removeItemForKey:(NSString *)key {
-    if ([itemsToUpdate objectForKey:key]) {
+    if (itemsToUpdate[key]) {
         [itemsToUpdate removeObjectForKey:key];
     } else {
         [[self class] removeItemForKey:key service:service accessGroup:accessGroup];
@@ -374,7 +374,7 @@ static NSString *defaultService;
 
 - (void)synchronize {    
     for (NSString *key in itemsToUpdate) {
-        [[self class] setData:[itemsToUpdate objectForKey:key] forKey:key service:service accessGroup:accessGroup];
+        [[self class] setData:itemsToUpdate[key] forKey:key service:service accessGroup:accessGroup];
     }
 }
 
